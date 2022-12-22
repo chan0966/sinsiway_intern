@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sinsiway.intern.mapper.h2.H2Mapper">
+	
+	<!-- 에이터베이스 테이블에 삽입 -->
+	<insert id="insertDatabase">
+		<selectKey resultType="Long" keyProperty="databaseId" order="BEFORE">
+			SELECT IDENTITY_BASE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME= 'SW_DATABASE' AND COLUMN_NAME = 'DATABASE_ID'
+		</selectKey>
+		INSERT INTO SW_DATABASE(
+			 DATABASE_ID,
+			 DATABASE,
+			 IP,
+			 PASSWORD,
+			 PORT,
+			 TYPE,
+			 USERNAME
+		)
+		VALUES(
+			DEFAULT,
+			#{database},
+			#{ip},
+			#{password},
+			#{port},
+			#{type},
+			#{username}
+		)
+	</insert>
+	
+	<insert id="isnertConnLog">
+		INSERT INTO SW_CONNECTION_LOG (
+			 ID
+			 ,CLIENT_IP
+			 ,CONNECT_DATE
+			 ,RESULT
+			 ,DATABASE_ID
+		)VALUES(
+			#{id},
+			#{clientIp},
+			#{connectDate},
+			#{result},
+			#{databaseId}
+		)
+	</insert>
+	
+	<select id="selectDatabaseIdByDatabaseModel" resultType="string">
+		SELECT DATABASE_ID
+		FROM SW_DATABASE 
+		WHERE TYPE = #{type} 
+			AND DATABASE = #{database}
+			AND IP = #{ip} 
+			AND PORT = #{port}
+	</select>
+	
+	<!-- 데이터베이스 데이터 삭제 -->
+	<delete id="deleteDatabase">
+		DELETE FROM SW_DATABASE WHERE DATABASE_ID = #{databaseId}
+	</delete>
+	
+	<select id="selectAllDatabases" resultType="map">
+		SELECT * FROM SW_DATABASE
+	</select>
+</mapper>
