@@ -1,5 +1,6 @@
 package com.sinsiway.intern.service;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -26,5 +27,12 @@ public interface DatabaseService {
 	 * @return
 	 */
 	ArrayList<HashMap<String, Object>> selectAllDatabases();
+
+	/**
+	 * 데이터베이스 아이디로 커넥션결과 가져오기
+	 * @param databaseId
+	 * @return
+	 */
+	HashMap<String, Object> getConnectionByDatabaseId(long databaseId);
 
 }

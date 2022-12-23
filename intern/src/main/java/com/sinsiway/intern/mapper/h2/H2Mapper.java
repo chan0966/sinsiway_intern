@@ -42,6 +42,13 @@ public interface H2Mapper {
 	 */
 	ArrayList<HashMap<String, Object>> selectAllDatabases();
 
+	/**
+	 * 데이터베이스 아이디로 데이터베이스 가져오기
+	 * @param databaseId
+	 * @return
+	 */
+	DatabaseModel selectDatabaseById(long databaseId);
+
 	
 	
 }

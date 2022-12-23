@@ -59,12 +59,7 @@
 		DELETE FROM SW_DATABASE WHERE DATABASE_ID = #{databaseId}
 	</delete>
 	
-	<!-- 모든 등록된 데이터베이스 조회 -->
 	<select id="selectAllDatabases" resultType="map">
 		SELECT * FROM SW_DATABASE
-	</select>
-	
-	<select id="selectDatabaseById" resultType="databaseModel">
-		SELECT * FROM SW_DATABASE WHERE DATABASE_ID = #{databaseId}
 	</select>
 </mapper>
