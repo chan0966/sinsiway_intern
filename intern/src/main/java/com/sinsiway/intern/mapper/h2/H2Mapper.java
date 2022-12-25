@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import com.sinsiway.intern.model.ConnModel;
 import com.sinsiway.intern.model.DatabaseModel;
+import com.sinsiway.intern.model.ExecuteQueryModel;
 
 public interface H2Mapper {
 
@@ -48,6 +49,13 @@ public interface H2Mapper {
 	 * @return
 	 */
 	DatabaseModel selectDatabaseById(long databaseId);
+
+	/**
+	 * 데이터베이스 수행로그 삽입
+	 * @param childExecuteQueryModel
+	 * @return
+	 */
+	int insertExecuteLog(ExecuteQueryModel childExecuteQueryModel);
 
 	
 	

@@ -1,21 +1,26 @@
 package com.sinsiway.intern.model;
 
 import java.sql.Timestamp;
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
 
 import lombok.Data;
 
 @Data
 public class ExecuteQueryModel {
-	private long id;
+	private long id; // service
 	private String clientIp;
 	private Timestamp execDate;
-	private String message;
-	private boolean result;
-	private String sqlText;
-	private String sqlType;
+	private String message;// service
+	private boolean result;// service
+	private String sqlText;// service
+	private String sqlType;// service
 	private long databaseId;
+
+	private ArrayList<ArrayList<Object>> resultSet;// service
+	private long connId;
 	
-	private List<Map<String, Object>> resultMap;
+	public void setResultAndMsg(boolean result, String message) {
+		this.result = result;
+		this.message = message;
+	}
 }

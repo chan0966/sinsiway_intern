@@ -173,7 +173,9 @@ public class ConnectionController {
 		
 		for (String connId:InternUtil.getConnIdList()) {
 			ConnSet connSet = (ConnSet) session.getAttribute(connId);
-			connModelList.add(connSet.getConnModel());
+			if(connSet!= null) {				
+				connModelList.add(connSet.getConnModel());
+			}
 		}
 		
 		HashMap<String, ArrayList<ConnModel>> resultMap = new HashMap<>();

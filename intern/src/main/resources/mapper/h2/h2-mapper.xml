@@ -67,4 +67,26 @@
 	<select id="selectDatabaseById" resultType="databaseModel">
 		SELECT * FROM SW_DATABASE WHERE DATABASE_ID = #{databaseId}
 	</select>
+	
+	<insert id="insertExecuteLog">
+		INSERT INTO SW_EXECUTE_LOG(
+			 ID
+			 ,CLIENT_IP
+			 ,EXEC_DATE
+			 ,MESSAGE
+			 ,RESULT
+			 ,SQL_TEXT
+			 ,SQL_TYPE
+			 ,DATABASE_ID
+		)VALUES(
+			#{id}
+			,#{clientIp}
+			,#{execDate}
+			,#{message}
+			,#{result}
+			,#{sqlText}
+			,#{sqlType}
+			,#{databaseId}
+		)
+	</insert>
 </mapper>

@@ -4,7 +4,6 @@ import java.sql.Statement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import com.sinsiway.intern.model.DatabaseModel;
 
@@ -33,24 +32,6 @@ public class JDBCTemplate {
 
 		return conn;
 
-	}
-
-	public static void commit(Connection conn) {
-		try {
-			if (conn != null && !conn.isClosed())
-				conn.commit();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void rollback(Connection conn) {
-		try {
-			if (conn != null && !conn.isClosed())
-				conn.rollback();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 	}
 
 	public static void close(Connection conn) {
