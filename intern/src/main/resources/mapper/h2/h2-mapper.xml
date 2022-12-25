@@ -89,4 +89,27 @@
 			,#{databaseId}
 		)
 	</insert>
+	
+	<!-- 거부 -->
+	<!-- 거부 아이피 추가 -->
+	<insert id="InsertRejectPolicy">
+		ISNERT INTO SW_DATABASE_REJECT
+		(
+			POLICY_ID
+			, DATABASE_ID
+			, CLIENT_IP
+		)VALUES(
+			DEFAULT
+			, #{databaseId}
+			, #{clientIp}
+		)
+	</insert>
+	<!-- 데이터베이스 아이디로 거부 아이피 추가 -->
+	<select id="getRejectPolicyByDatabaseId" resultType="rejectPolicyModel">
+		SELECT * FROM SW_DATABASE_REJECT WHERE DATABASE_ID = #{databaseIdL}
+	</select>
+	<!-- 거부 정책 삭제 -->
+	<delete id="deleteRejectPolicy">
+		DELETE FROM SW_DATABASE_REJECT WHERE POLICY_ID = #{policyIdL}
+	</delete>
 </mapper>

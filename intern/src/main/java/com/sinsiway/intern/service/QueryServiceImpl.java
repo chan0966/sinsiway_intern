@@ -73,7 +73,6 @@ public class QueryServiceImpl implements QueryService {
 					sqlTypeObj.execute(conn, sqlTextEle);
 					childExecuteQueryModel.setResultAndMsg(sqlTypeObj.getResult(), sqlTypeObj.getMsg());
 				} catch (Exception e) {
-					e.printStackTrace();
 					childExecuteQueryModel.setResultAndMsg(false, "지원하지않는 SQL 구문입니다 :" + sqlType);
 				}
 				break;

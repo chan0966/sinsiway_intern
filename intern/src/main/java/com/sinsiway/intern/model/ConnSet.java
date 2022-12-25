@@ -7,5 +7,5 @@ import lombok.Data;
 @Data
 public class ConnSet {
 	ConnModel connModel;
-	Connection conn; 
+	Connection conn;
 }

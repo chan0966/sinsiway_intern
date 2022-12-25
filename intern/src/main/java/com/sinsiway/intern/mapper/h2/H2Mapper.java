@@ -6,6 +6,7 @@ import java.util.HashMap;
 import com.sinsiway.intern.model.ConnModel;
 import com.sinsiway.intern.model.DatabaseModel;
 import com.sinsiway.intern.model.ExecuteQueryModel;
+import com.sinsiway.intern.model.RejectPolicyModel;
 
 public interface H2Mapper {
 
@@ -56,6 +57,27 @@ public interface H2Mapper {
 	 * @return
 	 */
 	int insertExecuteLog(ExecuteQueryModel childExecuteQueryModel);
+
+	/**
+	 * 거부 아이피 추가
+	 * @param rejectPolicyModel
+	 * @return
+	 */
+	int InsertRejectPolicy(RejectPolicyModel rejectPolicyModel)throws Exception;
+
+	/**
+	 * 데이터베이스 아이디로 거부 아이피 조회
+	 * @param databaseIdL
+	 * @return
+	 */
+	ArrayList<RejectPolicyModel> getRejectPolicyByDatabaseId(long databaseIdL);
+
+	/**
+	 * 거부 정책 삭제
+	 * @param policyIdL
+	 * @return
+	 */
+	int deleteRejectPolicy(long policyIdL);
 
 	
 	
