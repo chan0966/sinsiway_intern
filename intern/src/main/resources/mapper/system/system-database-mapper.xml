@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.sinsiway.intern.mapper.h2.H2Mapper">
+<mapper namespace="com.sinsiway.intern.mapper.system.SystemDatabaseMapper">
 	
 	<!-- 에이터베이스 테이블에 삽입 -->
 	<insert id="insertDatabase">
@@ -68,6 +68,18 @@
 		SELECT * FROM SW_DATABASE WHERE DATABASE_ID = #{databaseId}
 	</select>
 	
+	<!-- 데이터베이스 수정 -->
+	<update id="updateDatabase">
+		UPDATE SW_DATABASE SET
+			DATABASE = #{database}
+			,IP = #{ip}
+			,PASSWORD = #{password}
+			,PORT = #{port}
+			,TYPE = #{type}
+			,USERNAME = #{username}
+		WHERE DATABASE_ID = #{databaseId}
+	</update>
+	
 	<insert id="insertExecuteLog">
 		INSERT INTO SW_EXECUTE_LOG(
 			 ID
@@ -93,15 +105,14 @@
 	<!-- 거부 -->
 	<!-- 거부 아이피 추가 -->
 	<insert id="InsertRejectPolicy">
-		ISNERT INTO SW_DATABASE_REJECT
-		(
+		INSERT INTO SW_DATABASE_REJECT (
 			POLICY_ID
-			, DATABASE_ID
-			, CLIENT_IP
-		)VALUES(
+			,CLIENT_IP
+			,DATABASE_ID
+		) VALUES (
 			DEFAULT
-			, #{databaseId}
 			, #{clientIp}
+			, #{databaseId}
 		)
 	</insert>
 	<!-- 데이터베이스 아이디로 거부 아이피 추가 -->

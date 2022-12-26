@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -16,12 +17,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.google.gson.Gson;
 import com.sinsiway.intern.model.ConnModel;
 import com.sinsiway.intern.model.ConnSet;
-import com.sinsiway.intern.service.DatabaseService;
+import com.sinsiway.intern.service.ConnectionService;
 import com.sinsiway.intern.service.LogService;
-import com.sinsiway.intern.util.InternUtil;
+import com.sinsiway.intern.util.ConnIdUtill;
 import com.sinsiway.intern.util.JDBCTemplate;
 
 @Controller
@@ -30,10 +30,11 @@ public class ConnectionController {
 	@Autowired
 	private LogService logService;
 	@Autowired
-	private DatabaseService databaseService;
+	private ConnectionService connectionService;
 
 	/**
 	 * 등록되있는 데이터베이스 접속
+	 * 
 	 * @param databaseId
 	 * @param req
 	 * @param session
@@ -41,18 +42,29 @@ public class ConnectionController {
 	 */
 	@GetMapping("connection/{databaseId}")
 	@ResponseBody
-	public String getConnnectByDatabaseId(@PathVariable("databaseId") long databaseId, HttpServletRequest req,
-			HttpSession session) {
-		Gson gson = new Gson();
-
-		// 접속 얻어오기
-		HashMap<String, Object> connResult = databaseService.getConnectionByDatabaseId(databaseId);
+	public Map<String, Object> getConnnectByDatabaseId(@PathVariable("databaseId") String databaseIdStr,
+			HttpServletRequest req, HttpSession session) {
+		HashMap<String, Object> result = new HashMap<>();
 
 		// 접속 정보 작성
 		ConnModel connModel = new ConnModel();
-		connModel.setId(InternUtil.getIntId());
+		connModel.setId(ConnIdUtill.getIntId());
 		connModel.setClientIp(req.getRemoteAddr());
 		connModel.setConnectDate(Timestamp.valueOf(LocalDateTime.now()));
+
+		long databaseId = 0;
+		try {
+			databaseId = Long.parseLong(databaseIdStr);
+		} catch (Exception e) {
+			connModel.setResult(false);
+			result.put("connModel", connModel);
+			result.put("msg", "올바르지 않은 데이터베이스 아이디입니다. 정수로 입력해주세요");
+		}
+
+		// 접속 얻어오기
+		HashMap<String, Object> connResult = connectionService.getConnectionByDatabaseId(databaseId,
+				req.getRemoteAddr());
+
 		connModel.setDatabaseId(databaseId);
 		connModel.setResult((boolean) connResult.get("result"));
 
@@ -66,121 +78,127 @@ public class ConnectionController {
 			connSet.setConn(conn);
 
 			// 세션에 담기
-			session.setAttribute(InternUtil.getConnId(), connSet);
-			InternUtil.addConnId();
-		} else {
-			connModel.setDatabaseId(-1);
+			session.setAttribute(ConnIdUtill.getConnId(), connSet);
+			ConnIdUtill.addConnId();
 		}
 
 		// 접속 정보 로그 테이블에 삽입
-		int insertLogResult = logService.isnertConnLog(connModel);
-		if (insertLogResult == 0) {
-			// TODO : 로깅
+		if (connModel.getDatabaseId() != -1) {
+			logService.insertConnLog(connModel);
 		}
 
 		// 돌려줄 결과 만들기
-		HashMap<String, Object> result = new HashMap<>();
 		result.put("connModel", connModel);
 		result.put("msg", connResult.get("msg"));
 
-		return gson.toJson(result);
+		return result;
 	}
 
 	/**
 	 * 접속 끊기
+	 * 
 	 * @param connectionId
 	 * @param session
 	 * @return
 	 */
 	@DeleteMapping("connection/{connectionId}")
 	@ResponseBody
-	public String disconnectConnection(@PathVariable("connectionId") String connectionId, HttpSession session) {
-		Gson gson = new Gson();
+	public Map<String, Object> disconnectConnection(@PathVariable("connectionId") String connectionIdStr,
+			HttpSession session) {
 		ArrayList<Long> disconnConnIdList = new ArrayList<>();
-		
-		//세션을 돌면서 만들어진 커넥션 정보를 검색
-		for (String connId:InternUtil.getConnIdList()) {
+		HashMap<String, Object> resultMap = new HashMap<>();
+
+		long connectionId = 0;
+		try {
+			connectionId = Long.parseLong(connectionIdStr);
+		} catch (Exception e) {
+			resultMap.put("result", false);
+			resultMap.put("msg", "올바르지 않은 접속 아이디입니다. 정수로 입력해주세요");
+			return resultMap;
+		}
+
+		// 세션을 돌면서 만들어진 커넥션 정보를 검색
+		for (String connId : ConnIdUtill.getConnIdList()) {
 			ConnSet connSet = (ConnSet) session.getAttribute(connId);
-			
+
 			// 가져온 커넥션 정보중 아이디가 일치하는 정보를 찾아서 커넥션 닫고 세션 어트리부트 삭제
 			if (connSet != null) {
-				if(connSet.getConnModel().getId() == Long.parseLong(connectionId)) {
+				if (connSet.getConnModel().getId() == connectionId) {
 					JDBCTemplate.close(connSet.getConn());
-					
+
 					session.removeAttribute(connId);
-					InternUtil.deleteConnId(connId);
-					
+					ConnIdUtill.deleteConnId(connId);
+
 					disconnConnIdList.add(connSet.getConnModel().getId());
-					//TODO:로깅
+					// TODO:로깅
 				}
 			}
 		}
-		
-		HashMap<String,Object> resultMap = new HashMap<>();
+
 		resultMap.put("disconnCount", disconnConnIdList.toArray().length);
 		resultMap.put("msg", disconnConnIdList.toArray().length + "개의 접속 해제");
 		resultMap.put("disconnConnIdList", disconnConnIdList);
-		
-		return gson.toJson(resultMap);
+
+		return resultMap;
 	}
-	
+
 	/**
 	 * 모든 접속 해제
+	 * 
 	 * @param session
 	 * @return
 	 */
-	@DeleteMapping("allConnection")
+	@DeleteMapping("allconnection")
 	@ResponseBody
-	public String disconnectAllConnection(HttpSession session) {
-		Gson gson = new Gson();
+	public Map<String, Object> disconnectAllConnection(HttpSession session) {
 		ArrayList<Long> disconnConnIdList = new ArrayList<>();
-		
-		//세션을 돌면서 만들어진 커넥션 정보를 검색
-		for (String connId:InternUtil.getConnIdList()) {
+
+		// 세션을 돌면서 만들어진 커넥션 정보를 검색
+		for (String connId : ConnIdUtill.getConnIdList()) {
 			ConnSet connSet = (ConnSet) session.getAttribute(connId);
-			
+
 			// 가져온 커넥션 커넥션 닫고 세션 어트리부트 삭제
 			if (connSet != null) {
 				JDBCTemplate.close(connSet.getConn());
-				
+
 				session.removeAttribute(connId);
-				InternUtil.deleteConnId(connId);
-				
+				ConnIdUtill.deleteConnId(connId);
+
 				disconnConnIdList.add(connSet.getConnModel().getId());
-				//TODO:로깅
+				// TODO:로깅
 			}
 		}
-		
+
 		// 결과리턴
-		HashMap<String,Object> resultMap = new HashMap<>();
+		HashMap<String, Object> resultMap = new HashMap<>();
 		resultMap.put("disconnCount", disconnConnIdList.toArray().length);
 		resultMap.put("msg", disconnConnIdList.toArray().length + "개의 접속 해제");
 		resultMap.put("disconnConnIdList", disconnConnIdList);
-		
-		return gson.toJson(resultMap);
+
+		return resultMap;
 	}
-	
+
 	/**
 	 * 모든 접속 조회
+	 * 
 	 * @param session
 	 * @return
 	 */
-	@GetMapping("allConnection")
+	@GetMapping("allconnection")
 	@ResponseBody
-	public String getAllConnection(HttpSession session) {
-		Gson gson = new Gson();
+	public Map<String, ArrayList<ConnModel>> getAllConnection(HttpSession session) {
 		ArrayList<ConnModel> connModelList = new ArrayList<>();
-		
-		for (String connId:InternUtil.getConnIdList()) {
+
+		for (String connId : ConnIdUtill.getConnIdList()) {
 			ConnSet connSet = (ConnSet) session.getAttribute(connId);
-			if(connSet!= null) {				
+			if (connSet != null) {
 				connModelList.add(connSet.getConnModel());
 			}
 		}
-		
+
 		HashMap<String, ArrayList<ConnModel>> resultMap = new HashMap<>();
 		resultMap.put("connectionList", connModelList);
-		
-		return gson.toJson(resultMap);
+
+		return resultMap;
 	}
 }

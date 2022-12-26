@@ -2,6 +2,7 @@ package com.sinsiway.intern.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -12,14 +13,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.google.gson.Gson;
 import com.sinsiway.intern.model.ConnSet;
 import com.sinsiway.intern.model.DatabaseModel;
 import com.sinsiway.intern.service.DatabaseService;
-import com.sinsiway.intern.util.InternUtil;
+import com.sinsiway.intern.util.ConnIdUtill;
 import com.sinsiway.intern.util.JDBCTemplate;
 
 @Controller
@@ -33,14 +34,12 @@ public class DatabaseController {
 	 * 
 	 * @return
 	 */
-	@GetMapping("/allDatabases")
+	@GetMapping("/alldatabases")
 	@ResponseBody
-	public String selectAllDatabases() {
-		Gson gson = new Gson();
-
+	public ArrayList<HashMap<String, Object>> selectAllDatabases() {
 		ArrayList<HashMap<String, Object>> resultSet = databaseService.selectAllDatabases();
 
-		return gson.toJson(resultSet);
+		return resultSet;
 	}
 
 	/**
@@ -53,9 +52,8 @@ public class DatabaseController {
 	 */
 	@PostMapping("database")
 	@ResponseBody
-	public String CreateConnDatabase(@RequestBody HashMap<String, String> param, HttpSession session,
+	public Map<String, Object> CreateConnDatabase(@RequestBody HashMap<String, String> param, HttpSession session,
 			HttpServletRequest req) {
-		Gson gson = new Gson();
 
 		// 받아온 정보로 데이터베이스 모델 작성
 		DatabaseModel databaseModel = new DatabaseModel();
@@ -76,7 +74,7 @@ public class DatabaseController {
 		regDatabaseResultMap.put("msg", resultMap.get("msg"));
 		regDatabaseResultMap.put("result", resultMap.get("result"));
 
-		return gson.toJson(regDatabaseResultMap);
+		return regDatabaseResultMap;
 	}
 
 	/**
@@ -86,13 +84,21 @@ public class DatabaseController {
 	 */
 	@DeleteMapping("database/{databaseId}")
 	@ResponseBody
-	public String deleteDatabase(@PathVariable("databaseId") String databaseId, HttpSession session) {
-		Gson gson = new Gson();
-		Long DatabaseIdL = Long.parseLong(databaseId);
+	public Map<String, Object> deleteDatabase(@PathVariable("databaseId") String databaseId, HttpSession session) {
+		HashMap<String, Object> resultMap = new HashMap<>();
 		ArrayList<Long> disconnConnIdList = new ArrayList<>();
+		Long DatabaseIdL = 0L;
+
+		try {
+			DatabaseIdL = Long.parseLong(databaseId);
+		} catch (Exception e) {
+			resultMap.put("result", false);
+			resultMap.put("msg", "올바르지 않은 데이터베이스 아이디입니다. 정수로 입력해주세요");
+			return resultMap;
+		}
 
 		// 먼저 세션에서 데이터베이스 아이디에 맞는 접속 해제
-		for (String connId : InternUtil.getConnIdList()) {
+		for (String connId : ConnIdUtill.getConnIdList()) {
 			ConnSet connSet = (ConnSet) session.getAttribute(connId);
 			if (connSet != null) {
 				if (DatabaseIdL == connSet.getConnModel().getDatabaseId()) {
@@ -105,24 +111,87 @@ public class DatabaseController {
 		}
 
 		// 삭제 수행
-		int result = databaseService.deleteDatabase(DatabaseIdL);
-
-		// 결과 전달용 map
-		HashMap<String, Object> resultMap = new HashMap<>();
-		if (result != 0) {
-			resultMap.put("result", true);
-			resultMap.put("msg",
-					"데이터베이스 등록 정보 삭제 성공 ID:" + databaseId + ". " + disconnConnIdList.toArray().length + "개의 접속 해제");
-		} else {
-			resultMap.put("result", false);
-			resultMap.put("msg", "데이터베이스 등록 정보 삭제 실패 등록되지않은ID:" + databaseId + ". " + disconnConnIdList.toArray().length
-					+ "개의 접속 해제");
-		}
+		resultMap.putAll(databaseService.deleteDatabase(DatabaseIdL, disconnConnIdList)) ;
 
 		resultMap.put("disconnConnIdList", disconnConnIdList);
 		resultMap.put("disconnCount", disconnConnIdList.toArray().length);
 
-		return gson.toJson(resultMap);
+		return resultMap;
 	}
+	
+	/**
+	 * 데이터베이스 조회
+	 * @param databaseId
+	 * @param session
+	 * @return
+	 */
+	@GetMapping("database/{databaseId}")
+	@ResponseBody
+	public Object selectDatabase(@PathVariable("databaseId") String databaseId, HttpSession session) {
+		HashMap<String, Object> resultMap = new HashMap<>();
 
+		Long DatabaseIdL = 0L;
+		try {
+			DatabaseIdL = Long.parseLong(databaseId);
+		} catch (Exception e) {
+			resultMap.put("result", false);
+			resultMap.put("msg", "올바르지 않은 데이터베이스 아이디입니다. 정수로 입력해주세요");
+			return resultMap;
+		}
+		
+		DatabaseModel databaseModel = databaseService.getDatabaseById(DatabaseIdL);
+		if(databaseModel == null) {
+			resultMap.put("result", false);
+			resultMap.put("msg", "존재하지않는 데이터베이스입니다.");
+			return resultMap;
+		}
+		
+		return databaseModel;
+	}
+	
+	@PutMapping("database")
+	@ResponseBody
+	public Map<String, Object> updateDatabase(@RequestBody HashMap<String, String> param, HttpSession session,
+			HttpServletRequest req) {
+		HashMap<String, Object> resultMap = new HashMap<>();
+		DatabaseModel databaseModel = null;
+		Long DatabaseIdL = 0L;
+
+		try {
+			DatabaseIdL = Long.parseLong(param.get("databaseId"));
+		} catch (Exception e) {
+			resultMap.put("result", false);
+			resultMap.put("msg", "올바르지 않은 데이터베이스 아이디입니다. 정수로 입력해주세요");
+			return resultMap;
+		}
+		
+		try {
+			databaseModel = databaseCheck(param);
+		} catch (Exception e) {
+			resultMap.put("result", false);
+			resultMap.put("msg", "올바르지 않은 데이터입니다.");
+			return resultMap;
+		}
+		
+		databaseModel.setDatabaseId(DatabaseIdL);
+		
+		resultMap = databaseService.updateDatabase(databaseModel);
+		
+		return null;
+	}
+	
+	/**
+	 * 데이터베이스 유효성 검사기
+	 */
+	private DatabaseModel databaseCheck(HashMap<String, String> param) throws Exception{
+		DatabaseModel databaseModel = new DatabaseModel();
+		databaseModel.setDatabaseId(Long.parseLong(param.get("database")));
+		databaseModel.setDatabase(param.get("database"));
+		databaseModel.setIp(param.get("ip"));
+		databaseModel.setUsername(param.get("username"));
+		databaseModel.setPassword(param.get("password"));
+		databaseModel.setPort(Integer.parseInt(param.get("port")));
+		databaseModel.setType(Integer.parseInt(param.get("type")));
+		return databaseModel;
+	}
 }

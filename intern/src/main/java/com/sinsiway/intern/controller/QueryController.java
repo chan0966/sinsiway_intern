@@ -13,11 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.google.gson.Gson;
 import com.sinsiway.intern.model.ConnSet;
 import com.sinsiway.intern.model.ExecuteQueryModel;
 import com.sinsiway.intern.service.QueryService;
-import com.sinsiway.intern.util.InternUtil;
+import com.sinsiway.intern.util.ConnIdUtill;
 
 @Controller
 public class QueryController {
@@ -26,15 +25,14 @@ public class QueryController {
 
 	@PostMapping("query")
 	@ResponseBody
-	public String query(@RequestBody HashMap<String, String> param, HttpSession session, HttpServletRequest req) {
-		Gson gson = new Gson();
+	public Object query(@RequestBody HashMap<String, String> param, HttpSession session, HttpServletRequest req) {
 		long connId = Long.parseLong(param.get("connId"));
 		String sqlText = param.get("sqlText");
 		
 		ConnSet connSet = null;
 		
 		//존재하는 커넥션 검색
-		for(String connSetId:InternUtil.getConnIdList()) {
+		for(String connSetId:ConnIdUtill.getConnIdList()) {
 			ConnSet sessionConnSet = (ConnSet) session.getAttribute(connSetId);
 			if(sessionConnSet != null) {	
 				if(sessionConnSet.getConnModel().getId() == connId) {
@@ -48,7 +46,7 @@ public class QueryController {
 			HashMap<String, Object> noConnSetResult = new HashMap<>();
 			noConnSetResult.put("result", false);
 			noConnSetResult.put("msg", "접속이 존재하지 않습니다.");
-			return gson.toJson(noConnSetResult);
+			return noConnSetResult;
 		}
 
 		// 쿼리 수행 객체 작성
@@ -61,6 +59,6 @@ public class QueryController {
 		// 서비스 호출
 		Object resultObject = queryService.execute(parentExecuteQueryModel, connSet.getConn(), sqlText);
 		
-		return gson.toJson(resultObject);
+		return resultObject;
 	}
 }

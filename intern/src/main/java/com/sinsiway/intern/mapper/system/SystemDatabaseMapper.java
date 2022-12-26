@@ -1,4 +1,4 @@
-package com.sinsiway.intern.mapper.h2;
+package com.sinsiway.intern.mapper.system;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,7 +8,7 @@ import com.sinsiway.intern.model.DatabaseModel;
 import com.sinsiway.intern.model.ExecuteQueryModel;
 import com.sinsiway.intern.model.RejectPolicyModel;
 
-public interface H2Mapper {
+public interface SystemDatabaseMapper {
 
 	/**
 	 * 데이터베이스 삽입 후 selectKey로 아이디 부여 후 결과 리턴
@@ -78,6 +78,13 @@ public interface H2Mapper {
 	 * @return
 	 */
 	int deleteRejectPolicy(long policyIdL);
+
+	/**
+	 * 데이터베이스 수정
+	 * @param databaseModel
+	 * @return
+	 */
+	int updateDatabase(DatabaseModel databaseModel);
 
 	
 	

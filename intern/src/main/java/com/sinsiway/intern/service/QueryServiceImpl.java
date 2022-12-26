@@ -6,18 +6,18 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sinsiway.intern.mapper.h2.H2Mapper;
+import com.sinsiway.intern.mapper.system.SystemDatabaseMapper;
 import com.sinsiway.intern.model.ExecuteQueryModel;
 import com.sinsiway.intern.repository.QueryDao;
 import com.sinsiway.intern.repository.SqlType;
-import com.sinsiway.intern.util.InternUtil;
+import com.sinsiway.intern.util.ConnIdUtill;
 
 @Service
 public class QueryServiceImpl implements QueryService {
 	@Autowired
 	private QueryDao dao;
 	@Autowired
-	private H2Mapper h2Mapper;
+	private SystemDatabaseMapper h2Mapper;
 
 	@Override
 	public Object execute(ExecuteQueryModel parentExecuteQueryModel, Connection conn, String sqlText) {
@@ -30,8 +30,13 @@ public class QueryServiceImpl implements QueryService {
 			String sqlType = sqlTextEle.trim().split(" ")[0].toUpperCase();
 
 			// 수행 모델 만들기
-			ExecuteQueryModel childExecuteQueryModel = parentExecuteQueryModel;
-			childExecuteQueryModel.setId(InternUtil.getIntId());
+			ExecuteQueryModel childExecuteQueryModel = null;
+			try {
+				childExecuteQueryModel = (ExecuteQueryModel) parentExecuteQueryModel.clone();
+			} catch (CloneNotSupportedException e1) {
+				continue;
+			}
+			childExecuteQueryModel.setId(ConnIdUtill.getIntId());
 			childExecuteQueryModel.setSqlText(sqlTextEle);
 			childExecuteQueryModel.setSqlType(sqlType);
 

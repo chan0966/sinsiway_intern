@@ -33,15 +33,7 @@ public class QueryDaoImpl implements QueryDao {
 	/**
 	 * executeUpdate
 	 */
-	@Override
-	public int executeUpdate(Connection conn, String sqlText) throws Exception {
-		PreparedStatement pstmt = conn.prepareStatement(sqlText);
-		int result = pstmt.executeUpdate();
-
-		JDBCTemplate.close(pstmt);
-
-		return result;
-	}
+	
 
 	@Override
 	public void commit(Connection conn) throws SQLException {

@@ -8,7 +8,7 @@ import javax.servlet.http.HttpSessionListener;
 import org.springframework.stereotype.Component;
 
 import com.sinsiway.intern.model.ConnSet;
-import com.sinsiway.intern.util.InternUtil;
+import com.sinsiway.intern.util.ConnIdUtill;
 import com.sinsiway.intern.util.JDBCTemplate;
 
 @Component
@@ -22,7 +22,7 @@ public class InternSessionListener implements HttpSessionListener{
 	public void sessionDestroyed(HttpSessionEvent se) {
 		HttpSession session = se.getSession();
 		
-		for (String connId:InternUtil.getConnIdList()) {
+		for (String connId:ConnIdUtill.getConnIdList()) {
 			ConnSet connSet = (ConnSet) session.getAttribute(connId);
 			
 			// 가져온 커넥션 커넥션 닫고 세션 어트리부트 삭제

@@ -29,7 +29,7 @@ public abstract class SqlType {
 		this.result = result;
 	}
 	/**
-	 * select 이외 구문 처리 오버라이딩 후에 this.executeUpdate메소드 이용하여 구문 수행 후, msg, result 필드 초기화해야함
+	 * 오버라이딩 후에 this.executeUpdate메소드 이용하여 구문 수행 후, msg, result 필드 초기화해야함
 	 * @param conn
 	 * @param sqlText
 	 */
@@ -50,5 +50,7 @@ public abstract class SqlType {
 		
 		return result;
 	}
+	
+	
 	
 }

@@ -14,8 +14,6 @@ public interface QueryDao {
 	 * @throws SQLException
 	 */
 	ArrayList<ArrayList<Object>> executeQuery(Connection conn, String sqlText) throws Exception;
-	
-	int executeUpdate(Connection conn, String sqlText) throws Exception;
 
 	void commit(Connection conn) throws SQLException;
 

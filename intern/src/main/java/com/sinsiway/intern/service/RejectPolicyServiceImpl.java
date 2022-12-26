@@ -6,7 +6,7 @@ import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sinsiway.intern.mapper.h2.H2Mapper;
+import com.sinsiway.intern.mapper.system.SystemDatabaseMapper;
 import com.sinsiway.intern.model.DatabaseModel;
 import com.sinsiway.intern.model.RejectPolicyModel;
 
@@ -14,7 +14,7 @@ import com.sinsiway.intern.model.RejectPolicyModel;
 public class RejectPolicyServiceImpl implements RejectPolicyService {
 
 	@Autowired
-	private H2Mapper h2Mapper;
+	private SystemDatabaseMapper h2Mapper;
 
 	/**
 	 * 거부 아이피 추가
@@ -25,6 +25,7 @@ public class RejectPolicyServiceImpl implements RejectPolicyService {
 		if (database == null) {
 			rejectPolicyModel.setResult(false);
 			rejectPolicyModel.setMsg("존재하지않는 데이터베이스입니다.");
+			return rejectPolicyModel;
 		}
 		try {
 			int result = h2Mapper.InsertRejectPolicy(rejectPolicyModel);
@@ -48,6 +49,18 @@ public class RejectPolicyServiceImpl implements RejectPolicyService {
 	 */
 	@Override
 	public ArrayList<RejectPolicyModel> getRejectPolicyByDatabaseId(long databaseIdL) {
+		ArrayList<RejectPolicyModel> noDatabase = new ArrayList<>();
+		RejectPolicyModel rejectPolicyModel = new RejectPolicyModel();
+		rejectPolicyModel.setDatabaseId(databaseIdL);
+		DatabaseModel database = h2Mapper.selectDatabaseById(rejectPolicyModel.getDatabaseId());
+		if (database == null) {
+			rejectPolicyModel.setResult(false);
+			rejectPolicyModel.setMsg("존재하지않는 데이터베이스입니다.");
+			noDatabase.add(rejectPolicyModel);
+			
+			return noDatabase;
+		}
+		
 		return h2Mapper.getRejectPolicyByDatabaseId(databaseIdL);
 	}
 

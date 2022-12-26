@@ -3,7 +3,7 @@ package com.sinsiway.intern.util;
 import java.util.LinkedList;
 import java.util.UUID;
 
-public class InternUtil {
+public class ConnIdUtill {
 
 	private static LinkedList<String> connIdList;
 	static{

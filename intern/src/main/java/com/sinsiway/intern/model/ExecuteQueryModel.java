@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import lombok.Data;
 
 @Data
-public class ExecuteQueryModel {
+public class ExecuteQueryModel implements Cloneable{
 	private long id; // service
 	private String clientIp;
 	private Timestamp execDate;
@@ -22,5 +22,10 @@ public class ExecuteQueryModel {
 	public void setResultAndMsg(boolean result, String message) {
 		this.result = result;
 		this.message = message;
+	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 }

@@ -9,6 +9,6 @@ public interface LogService {
 	 * @param connModel
 	 * @return
 	 */
-	int isnertConnLog(ConnModel connModel);
+	int insertConnLog(ConnModel connModel);
 
 }
