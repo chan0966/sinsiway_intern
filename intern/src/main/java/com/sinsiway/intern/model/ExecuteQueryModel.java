@@ -1,7 +1,7 @@
 package com.sinsiway.intern.model;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import lombok.Data;
 
@@ -16,7 +16,7 @@ public class ExecuteQueryModel implements Cloneable{
 	private String sqlType;// service
 	private long databaseId;
 
-	private ArrayList<ArrayList<Object>> resultSet;// service
+	private HashMap<String,Object> resultSet;// service
 	private long connId;
 	
 	public void setResultAndMsg(boolean result, String message) {

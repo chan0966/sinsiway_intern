@@ -1,27 +1,25 @@
 package com.sinsiway.intern.util;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.UUID;
 
 public class ConnIdUtill {
 
-	private static LinkedList<String> connIdList;
-	static{
-		connIdList = new LinkedList<>();
-		connIdList.add(getUUID());
-	}
+	private static LinkedList<String> connIdList = new LinkedList<>();
 
 	public static LinkedList<String> getConnIdList(){
 		return connIdList;
 	}
 	public static String getConnId() {
+		connIdList.add(getUUID());
 		return connIdList.getLast();
 	}
 	public static void addConnId() {
 		connIdList.add(getUUID());
 	}
-	public static void deleteConnId(String connId) {
-		connIdList.remove(connId);
+	public static void deleteConnId(ArrayList<String> deleteList) {
+		connIdList.removeAll(deleteList);
 	}
 
 	public static long getIntId() {

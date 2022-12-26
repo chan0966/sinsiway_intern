@@ -83,7 +83,7 @@ public class ConnectionController {
 		}
 
 		// 접속 정보 로그 테이블에 삽입
-		if (connModel.getDatabaseId() != -1) {
+		if (connModel.isResult()) {
 			logService.insertConnLog(connModel);
 		}
 
@@ -118,6 +118,7 @@ public class ConnectionController {
 		}
 
 		// 세션을 돌면서 만들어진 커넥션 정보를 검색
+		ArrayList<String> deleteList = new ArrayList<String>();
 		for (String connId : ConnIdUtill.getConnIdList()) {
 			ConnSet connSet = (ConnSet) session.getAttribute(connId);
 
@@ -127,13 +128,12 @@ public class ConnectionController {
 					JDBCTemplate.close(connSet.getConn());
 
 					session.removeAttribute(connId);
-					ConnIdUtill.deleteConnId(connId);
-
+					deleteList.add(connId);
 					disconnConnIdList.add(connSet.getConnModel().getId());
-					// TODO:로깅
 				}
 			}
 		}
+		ConnIdUtill.deleteConnId(deleteList);
 
 		resultMap.put("disconnCount", disconnConnIdList.toArray().length);
 		resultMap.put("msg", disconnConnIdList.toArray().length + "개의 접속 해제");
@@ -154,20 +154,22 @@ public class ConnectionController {
 		ArrayList<Long> disconnConnIdList = new ArrayList<>();
 
 		// 세션을 돌면서 만들어진 커넥션 정보를 검색
+		ArrayList<String> deleteList = new ArrayList<String>();
 		for (String connId : ConnIdUtill.getConnIdList()) {
 			ConnSet connSet = (ConnSet) session.getAttribute(connId);
 
 			// 가져온 커넥션 커넥션 닫고 세션 어트리부트 삭제
 			if (connSet != null) {
 				JDBCTemplate.close(connSet.getConn());
-
 				session.removeAttribute(connId);
-				ConnIdUtill.deleteConnId(connId);
-
+				
+				deleteList.add(connId);
+				
 				disconnConnIdList.add(connSet.getConnModel().getId());
 				// TODO:로깅
 			}
 		}
+		ConnIdUtill.deleteConnId(deleteList);
 
 		// 결과리턴
 		HashMap<String, Object> resultMap = new HashMap<>();

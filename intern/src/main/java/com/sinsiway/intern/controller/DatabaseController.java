@@ -98,6 +98,7 @@ public class DatabaseController {
 		}
 
 		// 먼저 세션에서 데이터베이스 아이디에 맞는 접속 해제
+		ArrayList<String> deleteList = new ArrayList<String>();
 		for (String connId : ConnIdUtill.getConnIdList()) {
 			ConnSet connSet = (ConnSet) session.getAttribute(connId);
 			if (connSet != null) {
@@ -105,10 +106,12 @@ public class DatabaseController {
 					JDBCTemplate.close(connSet.getConn());
 
 					session.removeAttribute(connId);
+					deleteList.add(connId);
 					disconnConnIdList.add(connSet.getConnModel().getId());
 				}
 			}
 		}
+		ConnIdUtill.deleteConnId(deleteList);
 
 		// 삭제 수행
 		resultMap.putAll(databaseService.deleteDatabase(DatabaseIdL, disconnConnIdList)) ;
@@ -168,6 +171,7 @@ public class DatabaseController {
 		try {
 			databaseModel = databaseCheck(param);
 		} catch (Exception e) {
+			e.printStackTrace();
 			resultMap.put("result", false);
 			resultMap.put("msg", "올바르지 않은 데이터입니다.");
 			return resultMap;
@@ -177,7 +181,7 @@ public class DatabaseController {
 		
 		resultMap = databaseService.updateDatabase(databaseModel);
 		
-		return null;
+		return resultMap;
 	}
 	
 	/**
@@ -185,7 +189,7 @@ public class DatabaseController {
 	 */
 	private DatabaseModel databaseCheck(HashMap<String, String> param) throws Exception{
 		DatabaseModel databaseModel = new DatabaseModel();
-		databaseModel.setDatabaseId(Long.parseLong(param.get("database")));
+		databaseModel.setDatabaseId(Long.parseLong(param.get("databaseId")));
 		databaseModel.setDatabase(param.get("database"));
 		databaseModel.setIp(param.get("ip"));
 		databaseModel.setUsername(param.get("username"));

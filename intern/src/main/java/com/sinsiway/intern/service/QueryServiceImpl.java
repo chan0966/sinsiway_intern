@@ -2,6 +2,7 @@ package com.sinsiway.intern.service;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,13 +45,11 @@ public class QueryServiceImpl implements QueryService {
 			switch (sqlType) {
 			case "SELECT":
 				try {
-					ArrayList<ArrayList<Object>> resultSet = dao.executeQuery(conn, sqlTextEle);
-					childExecuteQueryModel.setResultSet(resultSet);
-					childExecuteQueryModel.setResultAndMsg(true, (resultSet.toArray().length-1) + "개의 행이 검색됨.");
-					// TODO : 로깅
+					HashMap<String, Object> resultMap = dao.executeQuery(conn, sqlTextEle);
+					childExecuteQueryModel.setResultSet(resultMap);
+					childExecuteQueryModel.setResultAndMsg(true, (resultMap.size()-1) + "개의 행이 검색됨.");
 				} catch (Exception e) {
 					childExecuteQueryModel.setResultAndMsg(false, e.getMessage());
-					// TODO : 로깅
 				}
 				break;
 
@@ -63,10 +62,8 @@ public class QueryServiceImpl implements QueryService {
 						dao.rollback(conn);
 					}
 					childExecuteQueryModel.setResultAndMsg(true, sqlType + " 성공.");
-					// TODO : 로깅
 				} catch (Exception e) {
 					childExecuteQueryModel.setResultAndMsg(false, sqlType + " 실패." + e.getMessage());
-					// TODO : 로깅
 				}
 				break;
 				
@@ -86,7 +83,6 @@ public class QueryServiceImpl implements QueryService {
 			if (!"".equals(sqlTextEle)) {
 				int insertLogResult = h2Mapper.insertExecuteLog(childExecuteQueryModel);
 				if (insertLogResult == 0) {
-					// TODO : 로깅
 				}
 				resultExecuteQueryModelList.add(childExecuteQueryModel);
 			}

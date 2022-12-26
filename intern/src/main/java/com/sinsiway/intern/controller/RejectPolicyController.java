@@ -69,8 +69,16 @@ public class RejectPolicyController {
 		}
 
 		ArrayList<RejectPolicyModel> resultList = service.getRejectPolicyByDatabaseId(databaseIdL);
-
-		return resultList;
+		ArrayList<Object> convResultList = new ArrayList<Object>();
+		for(RejectPolicyModel model:resultList) {
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("policyId", model.getPolicyId());
+			map.put("databaseId", model.getDatabaseId());
+			map.put("clientIp", model.getClientIp());
+			convResultList.add(map);
+		}
+		
+		return convResultList;
 	}
 
 	/**

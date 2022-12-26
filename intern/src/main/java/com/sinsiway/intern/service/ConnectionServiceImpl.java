@@ -51,7 +51,6 @@ public class ConnectionServiceImpl implements ConnectionService{
 			} catch (Exception e) {
 				connResult.put("result", false);
 				connResult.put("msg", "커넥션을 얻는데 실패했습니다.");
-				//TODO : 로깅
 			}
 		}
 		
