@@ -11,7 +11,7 @@ public class CREATE extends SqlType{
 			String[] sqlTextArr = sqlText.toUpperCase().trim().split(" ");
 			this.executeUpdate(conn, sqlText);
 			setResult(true);
-			setMsg(sqlTextArr[1] + ": " + sqlTextArr[2].replaceAll("(", "") + "생성됨");
+			setMsg(sqlTextArr[1] + ": " + sqlTextArr[2].replaceAll("\\(", "") + "생성됨");
 		} catch (Exception e) {
 			setResult(false);
 			setMsg(e.getMessage());
