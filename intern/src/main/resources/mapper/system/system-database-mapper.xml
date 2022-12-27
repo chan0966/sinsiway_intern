@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.sinsiway.intern.mapper.system.SystemDatabaseMapper">
+<mapper namespace="com.sinsiway.intern.sqltool.mapper.system.SystemDatabaseMapper">
 	
 	<!-- 에이터베이스 테이블에 삽입 -->
 	<insert id="insertDatabase">

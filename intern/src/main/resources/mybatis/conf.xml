@@ -7,7 +7,7 @@
 	</settings>
 	
 	<typeAliases>
-		<typeAlias type="com.sinsiway.intern.model.DatabaseModel" alias="databaseModel"/>
-		<typeAlias type="com.sinsiway.intern.model.RejectPolicyModel" alias="rejectPolicyModel"/>
+		<typeAlias type="com.sinsiway.intern.sqltool.model.DatabaseModel" alias="databaseModel"/>
+		<typeAlias type="com.sinsiway.intern.sqltool.model.RejectPolicyModel" alias="rejectPolicyModel"/>
 	</typeAliases>
 </configuration>
