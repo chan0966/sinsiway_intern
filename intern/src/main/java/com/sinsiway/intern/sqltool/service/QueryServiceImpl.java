@@ -23,7 +23,7 @@ public class QueryServiceImpl implements QueryService {
 
 	@Override
 	public Object execute(ExecuteQueryModel parentExecuteQueryModel, Connection conn, String sqlText) {
-		String[] sqlTextArr = sqlText.split(";");
+		String[] sqlTextArr = sqlText.replaceAll(System.getProperty("line.separator"), " ").split(";");
 
 		ArrayList<ExecuteQueryModel> resultExecuteQueryModelList = new ArrayList<>();
 

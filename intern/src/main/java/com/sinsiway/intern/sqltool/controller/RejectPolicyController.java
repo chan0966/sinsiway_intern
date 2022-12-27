@@ -45,8 +45,8 @@ public class RejectPolicyController {
 		rejectPolicyModel.setClientIp(clientIp);
 		rejectPolicyModel.setDatabaseId(databaseId);
 
-		rejectPolicyModel = service.InsertRejectPolicy(rejectPolicyModel);
 		// 서비스 호출
+		rejectPolicyModel = service.InsertRejectPolicy(rejectPolicyModel);
 		return rejectPolicyModel;
 	}
 

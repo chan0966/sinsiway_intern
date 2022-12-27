@@ -28,7 +28,6 @@ public class InternSessionListener implements HttpSessionListener{
 			// 가져온 커넥션 커넥션 닫고 세션 어트리부트 삭제
 			if (connSet != null) {
 				JDBCTemplate.close(connSet.getConn());
-				//TODO:로깅
 			}
 		}
 	}

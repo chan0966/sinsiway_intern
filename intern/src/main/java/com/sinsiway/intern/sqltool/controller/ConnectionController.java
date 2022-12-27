@@ -162,11 +162,10 @@ public class ConnectionController {
 			if (connSet != null) {
 				JDBCTemplate.close(connSet.getConn());
 				session.removeAttribute(connId);
-				
+
 				deleteList.add(connId);
-				
+
 				disconnConnIdList.add(connSet.getConnModel().getId());
-				// TODO:로깅
 			}
 		}
 		ConnIdUtill.deleteConnId(deleteList);
