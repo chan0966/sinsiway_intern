@@ -55,7 +55,7 @@ public class RejectPolicyController {
 	 * @param databaseId
 	 * @return
 	 */
-	@GetMapping("reject-policy/{databaseId}")
+	@GetMapping("reject-policy/database/{databaseId}")
 	@ResponseBody
 	public Object getRejectPolicyByDatabaseId(@PathVariable("databaseId") String databaseId) {
 		HashMap<String, Object> resultMap = new HashMap<>();

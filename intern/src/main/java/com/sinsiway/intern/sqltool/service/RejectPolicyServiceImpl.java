@@ -14,21 +14,21 @@ import com.sinsiway.intern.sqltool.model.RejectPolicyModel;
 public class RejectPolicyServiceImpl implements RejectPolicyService {
 
 	@Autowired
-	private SystemDatabaseMapper h2Mapper;
+	private SystemDatabaseMapper Mapper;
 
 	/**
 	 * 거부 아이피 추가
 	 */
 	@Override
 	public RejectPolicyModel InsertRejectPolicy(RejectPolicyModel rejectPolicyModel) {
-		DatabaseModel database = h2Mapper.selectDatabaseById(rejectPolicyModel.getDatabaseId());
+		DatabaseModel database = Mapper.selectDatabaseById(rejectPolicyModel.getDatabaseId());
 		if (database == null) {
 			rejectPolicyModel.setResult(false);
 			rejectPolicyModel.setMsg("존재하지않는 데이터베이스입니다.");
 			return rejectPolicyModel;
 		}
 		try {
-			int result = h2Mapper.InsertRejectPolicy(rejectPolicyModel);
+			int result = Mapper.InsertRejectPolicy(rejectPolicyModel);
 			if (result != 0) {
 				rejectPolicyModel.setResult(true);
 				rejectPolicyModel.setMsg("거부 아이피 추가 성공.");
@@ -52,7 +52,7 @@ public class RejectPolicyServiceImpl implements RejectPolicyService {
 		ArrayList<RejectPolicyModel> noDatabase = new ArrayList<>();
 		RejectPolicyModel rejectPolicyModel = new RejectPolicyModel();
 		rejectPolicyModel.setDatabaseId(databaseIdL);
-		DatabaseModel database = h2Mapper.selectDatabaseById(rejectPolicyModel.getDatabaseId());
+		DatabaseModel database = Mapper.selectDatabaseById(rejectPolicyModel.getDatabaseId());
 		if (database == null) {
 			rejectPolicyModel.setResult(false);
 			rejectPolicyModel.setMsg("존재하지않는 데이터베이스입니다.");
@@ -61,7 +61,7 @@ public class RejectPolicyServiceImpl implements RejectPolicyService {
 			return noDatabase;
 		}
 		
-		return h2Mapper.getRejectPolicyByDatabaseId(databaseIdL);
+		return Mapper.getRejectPolicyByDatabaseId(databaseIdL);
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class RejectPolicyServiceImpl implements RejectPolicyService {
 	 */
 	@Override
 	public HashMap<String, Object> deleteRejectPolicy(long policyIdL) {
-		int result = h2Mapper.deleteRejectPolicy(policyIdL);
+		int result = Mapper.deleteRejectPolicy(policyIdL);
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		if(result != 0) {
 			resultMap.put("result", true);

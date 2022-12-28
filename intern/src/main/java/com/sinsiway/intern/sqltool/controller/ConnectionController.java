@@ -40,7 +40,7 @@ public class ConnectionController {
 	 * @param session
 	 * @return
 	 */
-	@GetMapping("connection/{databaseId}")
+	@GetMapping("connection/database/{databaseId}")
 	@ResponseBody
 	public Map<String, Object> getConnnectByDatabaseId(@PathVariable("databaseId") String databaseIdStr,
 			HttpServletRequest req, HttpSession session) {
