@@ -1,7 +1,6 @@
 package com.sinsiway.intern.sqltool.model;
 
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import lombok.Data;

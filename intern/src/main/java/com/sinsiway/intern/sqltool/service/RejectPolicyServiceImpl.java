@@ -73,10 +73,10 @@ public class RejectPolicyServiceImpl implements RejectPolicyService {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		if(result != 0) {
 			resultMap.put("result", true);
-			resultMap.put("msg", "거부 아이디 삭제 성공");
+			resultMap.put("msg", "거부 아이피 삭제 성공");
 		}else {
 			resultMap.put("result", false);
-			resultMap.put("msg", "거부 아이디 삭제 실패");
+			resultMap.put("msg", "거부 아이피 삭제 실패");
 		}
 		
 		return resultMap;
